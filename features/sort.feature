@@ -4,7 +4,7 @@ Feature: Sorting measurements
   I want to sort measurements and check-ins into folders
 
   Scenario: Sorting measurements
-    Given I have a directory with measurements from a communal drive at `tmp/hinfahrt`
+    Given I have a directory with measurements from a communal drive at `tmp/messungen`
     And in that directory, I have a file `vehicle-a/2016-02-29_Y301V9_CDA-01_Kriechen.dat`
     And in that directory, I have a file `vehicle-a/2016-02-29_Y301V9_CDA-02_Fahren.dat`
     And in that directory, I have a file `vehicle-b/2016-02-29_Y73000_Kriechen_CDA-01.dat`
@@ -15,8 +15,8 @@ Feature: Sorting measurements
       	"CDA-02": "CDA-02_Fahren"
       }
       """
-    When I type `cda -c tmp/hinfahrt/config.json tmp/hinfahrt tmp/auswertung`
+    When I type `cda sort -c tmp/messungen/config.json tmp/messungen tmp/auswertung`
     And the results folder is `tmp/auswertung`
-    Then I want to see the file `Kriechen/2016-02-29_Y301V9_CDA-01_Kriechen.dat` in the results folder
-    And I want to see the file `Kriechen/2016-02-29_Y73000_Kriechen_CDA-01.dat` in the results folder
-    And I want to see the file `Fahren/2016-02-29_Y301V9_CDA-02_Fahren.dat` in the results folder
+    Then I want to see the file `CDA-01_Kriechen/2016-02-29_Y301V9_CDA-01_Kriechen.dat` in the results folder
+    And I want to see the file `CDA-01_Kriechen/2016-02-29_Y73000_Kriechen_CDA-01.dat` in the results folder
+    And I want to see the file `CDA-02_Fahren/2016-02-29_Y301V9_CDA-02_Fahren.dat` in the results folder

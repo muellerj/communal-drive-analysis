@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require_relative "../lib/communal_drive_analysis"
+
+CommunalDriveAnalysis.start(ARGV)

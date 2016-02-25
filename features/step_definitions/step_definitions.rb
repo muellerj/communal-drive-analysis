@@ -18,6 +18,7 @@ end
 
 When(/^I type `(.*)`$/) do |command|
   @output = `#{command} 2>&1`.uncolorize
+  puts @output
 end
 
 When(/^the results folder is `(.*)`$/) do |dir|
