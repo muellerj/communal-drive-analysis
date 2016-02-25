@@ -17,11 +17,14 @@ end
 
 When(/^I type `(.*)`$/) do |command|
   @output = `#{command} 2>&1`.uncolorize
-  puts @output
 end
 
 Then(/^I want to see the following files in `(.*)`$/) do |results_dir, files|
   files.lines.map(&:chomp).each do |file|
     expect(File).to exist(File.join(results_dir, file))
   end
+end
+
+Then(/^I want to see the following output$/) do |string|
+  expect(@output).to eq string
 end
