@@ -18,7 +18,9 @@ Feature: Sorting measurements
       }
       """
     When I type `cda sort -c tmp/messungen/config.json tmp/messungen tmp/auswertung`
-    And the results folder is `tmp/auswertung`
-    Then I want to see the file `CDA-01_Kriechen/2016-02-29_Y301V9_CDA-01_Kriechen.dat` in the results folder
-    And I want to see the file `CDA-01_Kriechen/2016-02-29_Y73000_Kriechen_CDA-01.dat` in the results folder
-    And I want to see the file `CDA-02_Fahren/2016-02-29_Y301V9_CDA-02_Fahren.dat` in the results folder
+    Then I want to see the following files in `tmp/auswertung`
+      """
+      CDA-01_Kriechen/2016-02-29_Y301V9_CDA-01_Kriechen.dat
+      CDA-01_Kriechen/2016-02-29_Y73000_Kriechen_CDA-01.dat
+      CDA-02_Fahren/2016-02-29_Y301V9_CDA-02_Fahren.dat
+      """
