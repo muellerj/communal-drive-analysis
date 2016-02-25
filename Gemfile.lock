@@ -2,6 +2,7 @@ GEM
   remote: https://rubygems.org/
   specs:
     builder (3.2.2)
+    colorize (0.7.7)
     cucumber (2.3.2)
       builder (>= 2.1.2)
       cucumber-core (~> 1.4.0)
@@ -15,6 +16,7 @@ GEM
     cucumber-wire (0.0.1)
     diff-lcs (1.2.5)
     gherkin (3.2.0)
+    json (1.8.3)
     multi_json (1.11.2)
     multi_test (0.1.2)
     rake (10.5.0)
@@ -37,7 +39,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  colorize
   cucumber
+  json
   rake
   rspec
   thor
