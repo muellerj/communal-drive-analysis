@@ -1,19 +1,18 @@
 require "fileutils"
 require "colorize"
 
-Given(/^I have a directory with measurements from a communal drive at `(.*)`$/) do |dir|
+Given(/^I have a directory `(.*)` with the following files$/) do |dir, files|
   @meas_dir = dir
   FileUtils.rm_rf(dir)
   FileUtils.mkdir_p(dir)
+  files.lines.each do |file|
+    FileUtils.mkdir_p(File.dirname(File.join(@meas_dir, file)))
+    FileUtils.touch(File.join(@meas_dir, file))
+  end
 end
 
-Given(/^in that directory, I have a file `(.*)`$/) do |file|
-  FileUtils.mkdir_p(File.dirname(File.join(@meas_dir, file)))
-  FileUtils.touch(File.join(@meas_dir, file))
-end
-
-Given(/^in that directory, I have a config file with the following content$/) do |string|
-  File.write(File.join(@meas_dir, "config.json"), string)
+Given(/^I have a config file at `(.*)` with the following content$/) do |filename, string|
+  File.write(filename, string)
 end
 
 When(/^I type `(.*)`$/) do |command|
