@@ -8,10 +8,10 @@ class CommunalDriveAnalysis < Thor
   option :config,  aliases: ["-c"], default: "config.json"
   option :verbose, aliases: ["-v"], type: :boolean, default: false
   def sort(source, destination)
-    JSON.parse(File.read(options[:config])).each do |key, folder|
+    JSON.parse(File.read(options[:config])).each do |tag, folder|
       File.join(destination, folder).tap do |destination_folder|
         FileUtils.mkdir_p(destination_folder)
-        Dir.glob(File.join(source, "**/*#{key}*")).each do |file|
+        Dir.glob(File.join(source, "**/*#{tag}*")).each do |file|
           puts "Copying #{file}" if options[:verbose]
           FileUtils.cp(file, destination_folder)
         end
@@ -24,8 +24,8 @@ class CommunalDriveAnalysis < Thor
   def check(source)
     Dir.glob(File.join(source, "*/")).each do |folder|
       missing = []
-      JSON.parse(File.read(options[:config])).each do |key, _|
-        missing << key if Dir.glob(File.join(folder, "*#{key}*")).empty?
+      JSON.parse(File.read(options[:config])).each do |tag, _|
+        missing << tag if Dir.glob(File.join(folder, "*#{tag}*")).empty?
       end
       if missing.empty?
         puts "#{File.basename(folder)}: All files present"
