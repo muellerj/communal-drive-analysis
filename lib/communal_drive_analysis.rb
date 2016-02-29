@@ -2,6 +2,7 @@ require "thor"
 require "json"
 require "fileutils"
 require "colorize"
+require_relative "core_ext"
 
 class CommunalDriveAnalysis < Thor
   desc "sort SOURCE DESTINATION", "Sort files from SOURCE into DESTINATION"
@@ -11,7 +12,7 @@ class CommunalDriveAnalysis < Thor
     JSON.parse(File.read(options[:config])).each do |tag, folder|
       File.join(destination, folder).tap do |destination_folder|
         FileUtils.mkdir_p(destination_folder)
-        Dir.glob(File.join(source, "**/*#{tag}*")).each do |file|
+        Dir.globi(File.join(source, "**/*#{tag}*")).each do |file|
           puts "Copying #{file}" if options[:verbose]
           FileUtils.cp(file, destination_folder)
         end
@@ -25,7 +26,7 @@ class CommunalDriveAnalysis < Thor
     Dir.glob(File.join(source, "*/")).each do |folder|
       missing = []
       JSON.parse(File.read(options[:config])).each do |tag, _|
-        missing << tag if Dir.glob(File.join(folder, "*#{tag}*")).empty?
+        missing << tag if Dir.globi(File.join(folder, "*#{tag}*")).empty?
       end
       if missing.empty?
         puts "#{File.basename(folder)}: All files present"
