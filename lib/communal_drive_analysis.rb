@@ -31,7 +31,7 @@ class CommunalDriveAnalysis < Thor
       if missing.empty?
         puts "#{File.basename(folder)}: All files present"
       else
-        puts "#{File.basename(folder)}: Missing #{missing.join(", ")}"
+        puts "#{File.basename(folder)}: Missing #{missing.sort.join(", ")}"
       end
     end
   end
