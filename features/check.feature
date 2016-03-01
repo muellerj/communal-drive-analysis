@@ -8,21 +8,23 @@ Feature: Checking measurements
       """
       vehicle-a/2016-02-29_Y301V9_CDA-01_Kriechen.dat
       vehicle-a/2016-02-29_Y301V9_CDA-02_Fahren.dat
+      vehicle-a/2016-02-29_Y301V9_CDA-03_Rumstehen.dat
       vehicle-a/20160230_Y301V9_CheckIn.txt
       vehicle-b/2016-02-29_Y73000_Kriechen_CDA-01.dat
       """
     And I have a config file at `tmp/messungen/config.json` with the following content
       """
-      {
-        "CDA-01": "CDA-01_Kriechen",
-        "CDA-02": "CDA-02_Fahren",
-        "CheckIn": "CheckIns"
-      }
+      [
+        ["required", "CDA-01", "CDA-01_Kriechen"],
+        ["optional", "CDA-02", "CDA-02_Fahren"],
+        ["required", "CDA-03", "CDA-03_Stehen"],
+        ["required", "CheckIn", "CheckIns"]
+      ]
       """
     When I type `cda check -c tmp/messungen/config.json tmp/messungen`
     Then I want to see the following output
       """
       vehicle-a: All files present
-      vehicle-b: Missing CDA-02, CheckIn
+      vehicle-b: Missing CDA-03, CheckIn
 
       """
