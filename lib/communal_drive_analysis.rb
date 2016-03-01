@@ -30,9 +30,9 @@ class CommunalDriveAnalysis < Thor
         missing << tag if Dir.globi(File.join(folder, "*#{tag}*")).empty? && required
       end
       if missing.empty?
-        puts "#{File.basename(folder)}: All files present"
+        puts "#{File.basename(folder)}: All files present".green
       else
-        puts "#{File.basename(folder)}: Missing #{missing.sort.join(", ")}"
+        puts "#{File.basename(folder)}: Missing #{missing.sort.join(", ")}".red
       end
     end
   end
