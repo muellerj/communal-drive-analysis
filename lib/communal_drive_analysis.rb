@@ -3,16 +3,17 @@ require "json"
 require "fileutils"
 require "colorize"
 require_relative "core_ext"
+require_relative "maneuver_list"
 
 class CommunalDriveAnalysis < Thor
   desc "sort SOURCE DESTINATION", "Sort files from SOURCE into DESTINATION"
   option :config,  aliases: ["-c"], default: "config.json"
   option :verbose, aliases: ["-v"], type: :boolean, default: false
   def sort(source, destination)
-    JSON.parse(File.read(options[:config])).each do |_, tag, folder|
-      File.join(destination, folder).tap do |destination_folder|
+    ManeuverList.new(options[:config]).each do |maneuver|
+      File.join(destination, maneuver.folder).tap do |destination_folder|
         FileUtils.mkdir_p(destination_folder)
-        Dir.globi(File.join(source, "**/*#{tag}*")).each do |file|
+        Dir.globi(File.join(source, "**/*#{maneuver.tag}*")).each do |file|
           puts "Copying #{file}" if options[:verbose]
           FileUtils.cp(file, destination_folder)
         end
@@ -24,16 +25,24 @@ class CommunalDriveAnalysis < Thor
   option :config,  aliases: ["-c"], default: "config.json"
   def check(source)
     Dir.glob(File.join(source, "*/")).each do |folder|
-      missing = []
-      JSON.parse(File.read(options[:config])).each do |required, tag, _|
-        required = required == "required" ? true : false
-        missing << tag if Dir.globi(File.join(folder, "*#{tag}*")).empty? && required
+      [].tap do |missing|
+        ManeuverList.new(options[:config]).each do |maneuver|
+          if Dir.globi(File.join(folder, "**", "*#{maneuver.tag}*")).empty? && maneuver.required?
+            missing << maneuver.tag
+          end
+        end
+        display_vehicle_status(vehicle: File.basename(folder), missing: missing)
       end
-      if missing.empty?
-        puts "#{File.basename(folder)}: All files present".green
-      else
-        puts "#{File.basename(folder)}: Missing #{missing.sort.join(", ")}".red
-      end
+    end
+  end
+
+  private
+
+  def display_vehicle_status(vehicle:, missing:)
+    if missing.empty?
+      puts "#{vehicle}: All files present".green
+    else
+      puts "#{vehicle}: Missing #{missing.sort.join(", ")}".red
     end
   end
 end
