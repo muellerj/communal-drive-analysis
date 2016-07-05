@@ -26,23 +26,27 @@ class CommunalDriveAnalysis < Thor
   def check(source)
     Dir.glob(File.join(source, "*/")).each do |folder|
       [].tap do |missing|
-        ManeuverList.new(options[:config]).each do |maneuver|
-          if Dir.globi(File.join(folder, "**", "*#{maneuver.tag}*")).empty? && maneuver.required?
-            missing << maneuver.tag
+        ManeuverList.new(options[:config]).tap do |maneuver_list|
+          maneuver_list.each do |maneuver|
+            if Dir.globi(File.join(folder, "**", "*#{maneuver.tag}*")).empty? && maneuver.required?
+              missing << maneuver.tag
+            end
           end
+          display_vehicle_status(vehicle: File.basename(folder), missing: missing, maneuvers: maneuver_list)
         end
-        display_vehicle_status(vehicle: File.basename(folder), missing: missing)
       end
     end
   end
 
   private
 
-  def display_vehicle_status(vehicle:, missing:)
+  def display_vehicle_status(vehicle:, missing:, maneuvers:)
     if missing.empty?
-      puts "#{vehicle}: All files present".green
+      puts "#{vehicle}: All files present".colorize(:green)
+    elsif missing.sort == maneuvers.each.select(&:required?).map(&:tag).sort
+      puts "#{vehicle}: Missing all files".colorize(:red)
     else
-      puts "#{vehicle}: Missing #{missing.sort.join(", ")}".red
+      puts "#{vehicle}: Missing #{missing.sort.join(", ")}".colorize(:red)
     end
   end
 end

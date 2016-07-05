@@ -5,10 +5,8 @@ class ManeuverList
     end
   end
 
-  def each
-    @maneuvers.each do |maneuver|
-      yield(maneuver)
-    end
+  def each(&block)
+    @maneuvers.each(&block)
   end
 
   class Maneuver
