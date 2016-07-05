@@ -31,4 +31,10 @@ Feature: Checking measurements
       vehicle-a: All files present
       vehicle-b (Fahrer 1, Fahrer 2): Missing CDA-03, CheckIn
 
+      # Legende
+      CDA-01: CDA-01_Kriechen
+      CDA-02: CDA-02_Fahren
+      CDA-03: CDA-03_Stehen
+      CheckIn: CheckIns
+
       """

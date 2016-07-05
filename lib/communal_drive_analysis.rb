@@ -24,9 +24,9 @@ class CommunalDriveAnalysis < Thor
   desc "check SOURCE", "Check if all subfolders inside SOURCE have the required files"
   option :config,  aliases: ["-c"], default: "config.json"
   def check(source)
-    Dir.glob(File.join(source, "*/")).each do |folder|
-      [].tap do |missing|
-        ManeuverList.new(options[:config]).tap do |maneuver_list|
+    ManeuverList.new(options[:config]).tap do |maneuver_list|
+      Dir.glob(File.join(source, "*/")).each do |folder|
+        [].tap do |missing|
           maneuver_list.each do |maneuver|
             if Dir.globi(File.join(folder, "**", "*#{maneuver.tag}*")).empty? && maneuver.required?
               missing << maneuver.tag
@@ -35,6 +35,7 @@ class CommunalDriveAnalysis < Thor
           display_vehicle_status(vehicle: vehicle_name(folder), missing: missing, maneuvers: maneuver_list)
         end
       end
+      display_legend(maneuvers: maneuver_list)
     end
   end
 
@@ -44,6 +45,12 @@ class CommunalDriveAnalysis < Thor
     File.basename(folder).tap do |name|
       name << " (#{File.read(File.join(folder, "fahrer.txt"))})" if File.exist?(File.join(folder, "fahrer.txt"))
     end
+  end
+
+  def display_legend(maneuvers:)
+    puts "\n"
+    puts "# Legende".colorize(:yellow)
+    puts maneuvers.each.map { |maneuver| "#{maneuver.tag}: #{maneuver.folder}\n" }
   end
 
   def display_vehicle_status(vehicle:, missing:, maneuvers:)
