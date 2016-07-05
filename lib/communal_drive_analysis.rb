@@ -32,13 +32,19 @@ class CommunalDriveAnalysis < Thor
               missing << maneuver.tag
             end
           end
-          display_vehicle_status(vehicle: File.basename(folder), missing: missing, maneuvers: maneuver_list)
+          display_vehicle_status(vehicle: vehicle_name(folder), missing: missing, maneuvers: maneuver_list)
         end
       end
     end
   end
 
   private
+
+  def vehicle_name(folder)
+    File.basename(folder).tap do |name|
+      name << " (#{File.read(File.join(folder, "fahrer.txt"))})" if File.exist?(File.join(folder, "fahrer.txt"))
+    end
+  end
 
   def display_vehicle_status(vehicle:, missing:, maneuvers:)
     if missing.empty?

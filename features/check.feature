@@ -21,10 +21,14 @@ Feature: Checking measurements
         ["required", "CheckIn", "CheckIns"]
       ]
       """
+    And I have a config file at `tmp/messungen/vehicle-b/fahrer.txt` with the following content
+      """
+      Fahrer 1, Fahrer 2
+      """
     When I type `cda check -c tmp/messungen/config.json tmp/messungen`
     Then I want to see the following output
       """
       vehicle-a: All files present
-      vehicle-b: Missing CDA-03, CheckIn
+      vehicle-b (Fahrer 1, Fahrer 2): Missing CDA-03, CheckIn
 
       """
