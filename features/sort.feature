@@ -22,7 +22,7 @@ Feature: Sorting measurements
         ["required", "CheckIn", "CheckIns"]
       ]
       """
-    When I type `cda sort -c tmp/messungen/config.json tmp/messungen tmp/auswertung`
+    When I type `cda sort -v -c tmp/messungen/config.json tmp/messungen tmp/auswertung`
     Then I want to see the following files in `tmp/auswertung`
       """
       CDA-01_Kriechen/2016-02-29_Y301V9_CDA-01_Kriechen.dat
@@ -31,4 +31,14 @@ Feature: Sorting measurements
       CDA-03_Stehen/2016-02-29_Y301V9_CDA-03_Rumstehen.dat
       CheckIns/20160230_Y73000_foo_CheckIn.txt
       CheckIns/20160230_Y301V9_CheckIn.txt
+      """
+    And I want to see the following output
+      """
+      2016-02-29_Y301V9_CDA-01_Kriechen.dat => CDA-01_Kriechen
+      2016-02-29_Y73000_Kriechen_CDA-01.dat => CDA-01_Kriechen
+      2016-02-29_Y301V9_CDA-02_Fahren.dat => CDA-02_Fahren
+      2016-02-29_Y301V9_CDA-03_Rumstehen.dat => CDA-03_Stehen
+      20160230_Y301V9_CheckIn.txt => CheckIns
+      20160230_Y73000_foo_CheckIn.txt => CheckIns
+
       """

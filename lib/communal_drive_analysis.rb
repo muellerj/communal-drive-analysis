@@ -14,7 +14,7 @@ class CommunalDriveAnalysis < Thor
       File.join(destination, maneuver.folder).tap do |destination_folder|
         FileUtils.mkdir_p(destination_folder)
         Dir.globi(File.join(source, "**/*#{maneuver.tag}*")).each do |file|
-          puts "Copying #{file}" if options[:verbose]
+          puts "#{File.basename(file)} => #{maneuver.folder}" if options[:verbose]
           FileUtils.cp(file, destination_folder)
         end
       end
