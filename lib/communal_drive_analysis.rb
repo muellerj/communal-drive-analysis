@@ -10,10 +10,14 @@ class CommunalDriveAnalysis < Thor
   option :config,  aliases: ["-c"], default: "config.json"
   option :verbose, aliases: ["-v"], type: :boolean, default: false
   def sort(source, destination)
-    ManeuverList.new(options[:config]).each do |maneuver|
+
+    maneuver_list = ManeuverList.new(options[:config])
+    source_files  = Dir.globi(File.join(source, "**", "*"))
+
+    maneuver_list.each do |maneuver|
       File.join(destination, maneuver.folder).tap do |destination_folder|
         FileUtils.mkdir_p(destination_folder)
-        Dir.globi(File.join(source, "**/*#{maneuver.tag}*")).each do |file|
+        source_files.select { |f| f.match(%r{#{maneuver.tag}}i) }.each do |file|
           puts "#{File.basename(file)} => #{maneuver.folder}" if options[:verbose]
           FileUtils.cp(file, destination_folder)
         end
