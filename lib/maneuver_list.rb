@@ -20,5 +20,9 @@ class ManeuverList
     def required?
       @required == "required"
     end
+
+    def missing_for?(vehicle, source_files)
+      source_files.none? { |f| f.match(%r{#{vehicle}.*#{tag}}i) } && required?
+    end
   end
 end

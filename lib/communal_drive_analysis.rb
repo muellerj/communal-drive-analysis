@@ -4,8 +4,12 @@ require "fileutils"
 require "colorize"
 require_relative "core_ext"
 require_relative "maneuver_list"
+require "pp"
 
 class CommunalDriveAnalysis < Thor
+
+  VEHICLE_REGEXP = /(V\d{6})/
+
   desc "sort SOURCE DESTINATION", "Sort files from SOURCE into DESTINATION"
   option :config,  aliases: ["-c"], default: "config.json"
   option :verbose, aliases: ["-v"], type: :boolean, default: false
@@ -29,16 +33,24 @@ class CommunalDriveAnalysis < Thor
   option :config,  aliases: ["-c"], default: "config.json"
   def check(source)
 
-    source_files    = Dir.globi(File.join(source, "**", "*"))
-    vehicle_folders = Dir.globi(File.join(source, "*/"))
-    maneuver_list   = ManeuverList.new(options[:config])
+    maneuver_list = ManeuverList.new(options[:config])
+    source_files  = Dir.globi(File.join(source, "**", "*"))
+    vehicles      = source_files.map { |filename| filename.match(VEHICLE_REGEXP) { $1 } }.
+                                 compact.
+                                 uniq.
+                                 map { |vehicle| [ vehicle, drivers_for(vehicle, source_files) ] }.
+                                 to_h
 
-    vehicle_folders.each do |vehicle_folder|
-      display_vehicle_status(vehicle: vehicle_name(vehicle_folder),
-                             missing: maneuver_list.each.select { |maneuver|
-                                        source_files.none? { |f| f.match(%r{^#{vehicle_folder}.*#{maneuver.tag}}i) } && maneuver.required?
-                                      }.map(&:tag),
-                             maneuvers: maneuver_list)
+    pp vehicles
+
+
+    vehicles.each do |vehicle, drivers|
+      missing = maneuver_list.each.
+                              select { |maneuver| maneuver.missing_for?(vehicle, source_files) }.
+                              map(&:tag)
+      display_vehicle_status(vehicle:    display_name(vehicle, drivers),
+                             missing:    missing,
+                             maneuvers:  maneuver_list)
     end
     display_legend(maneuvers: maneuver_list)
 
@@ -46,10 +58,14 @@ class CommunalDriveAnalysis < Thor
 
   private
 
-  def vehicle_name(folder)
-    File.basename(folder).tap do |name|
-      name << " (#{File.read(File.join(folder, "fahrer.txt"))})" if File.exist?(File.join(folder, "fahrer.txt"))
-    end
+  def display_name(vehicle, drivers)
+    "#{vehicle} (#{drivers.join(", ")})"
+  end
+
+  def drivers_for(vehicle, source_files)
+    source_files.select { |filename| filename.match("#{vehicle}/fahrer.txt") }.
+                 flat_map { |driverfile| File.read(driverfile).chomp.split(", ") }.
+                 uniq
   end
 
   def display_legend(maneuvers:)
