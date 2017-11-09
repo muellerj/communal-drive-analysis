@@ -22,7 +22,13 @@ class ManeuverList
     end
 
     def missing_for?(vehicle, source_files)
-      source_files.none? { |f| f.match(%r{#{vehicle}.*#{tag}}i) } && required?
+      source_files.none? do |f|
+        f.match(%r{#{vehicle}}i) && self.matches?(f)
+      end && required?
+    end
+
+    def matches?(file)
+      file.match(%r{#{tag}}i)
     end
   end
 end

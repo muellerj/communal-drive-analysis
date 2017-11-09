@@ -21,7 +21,7 @@ class CommunalDriveAnalysis < Thor
     maneuver_list.each do |maneuver|
       destination_folder = File.join(destination, maneuver.folder)
       ensure_folder_presence(destination_folder)
-      source_files.select { |f| f.match("#{maneuver.tag}") }.
+      source_files.select { |f| m.matches?(f) }.
                    each do |file|
         copy_file(file, destination_folder, options)
       end
