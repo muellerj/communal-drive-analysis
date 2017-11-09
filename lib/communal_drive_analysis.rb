@@ -19,12 +19,11 @@ class CommunalDriveAnalysis < Thor
     source_files  = Dir.globi(File.join(source, "**", "*"))
 
     maneuver_list.each do |maneuver|
-      File.join(destination, maneuver.folder).tap do |destination_folder|
-        FileUtils.mkdir_p(destination_folder)
-        source_files.select { |f| f.match(%r{#{maneuver.tag}}i) }.each do |file|
-          puts "#{File.basename(file)} => #{maneuver.folder}" if options[:verbose]
-          FileUtils.cp(file, destination_folder)
-        end
+      destination_folder = File.join(destination, maneuver.folder)
+      ensure_folder_presence(destination_folder)
+      source_files.select { |f| f.match("#{maneuver.tag}") }.
+                   each do |file|
+        copy_file(file, destination_folder, options)
       end
     end
   end
@@ -41,9 +40,6 @@ class CommunalDriveAnalysis < Thor
                                  map { |vehicle| [ vehicle, drivers_for(vehicle, source_files) ] }.
                                  to_h
 
-    pp vehicles
-
-
     vehicles.each do |vehicle, drivers|
       missing = maneuver_list.each.
                               select { |maneuver| maneuver.missing_for?(vehicle, source_files) }.
@@ -57,6 +53,17 @@ class CommunalDriveAnalysis < Thor
   end
 
   private
+
+  def ensure_folder_presence(folder)
+    FileUtils.mkdir_p(folder)
+  end
+
+  def copy_file(source, destination, options={})
+    puts "#{File.basename(file)} => #{File.basename(destination_folder)}" if options[:verbose]
+    FileUtils.cp(source, destination)
+  rescue
+    STDERR.puts "Error copying #{source} to #{destination}"
+  end
 
   def display_name(vehicle, drivers)
     "#{vehicle} (#{drivers.join(", ")})"
