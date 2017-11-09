@@ -56,10 +56,12 @@ class CommunalDriveAnalysis < Thor
 
   def ensure_folder_presence(folder)
     FileUtils.mkdir_p(folder)
+  rescue
+    STDERR.puts "Error creating dir #{folder}"
   end
 
   def copy_file(source, destination, options={})
-    puts "#{File.basename(file)} => #{File.basename(destination_folder)}" if options[:verbose]
+    puts "#{File.basename(source)} => #{File.basename(destination)}" if options[:verbose]
     FileUtils.cp(source, destination)
   rescue
     STDERR.puts "Error copying #{source} to #{destination}"
